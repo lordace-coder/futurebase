@@ -25,7 +25,9 @@ SECRET_KEY = 'django-insecure-l32w*e5s64=!m&^+0r=^&@%_fgc9q2d!wfxn$^v70du0*v#vb$
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    'futurebase.onrender.com',
+]
 
 
 # Application definition

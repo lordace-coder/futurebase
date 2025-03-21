@@ -1,0 +1,726 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ project.title }} - FutureBase</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --sidebar-width: 280px;
+            --primary-color: #4f46e5;
+            --primary-dark: #4338ca;
+            --secondary-color: #7c3aed;
+            --success-color: #059669;
+            --danger-color: #dc2626;
+            --warning-color: #d97706;
+            --info-color: #0891b2;
+            --text-primary: #111827;
+            --text-secondary: #4b5563;
+            --bg-light: #f9fafb;
+            --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+            background-color: var(--bg-light);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        .sidebar {
+            width: var(--sidebar-width);
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            min-height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 0;
+            padding: 2rem;
+            color: white;
+            z-index: 1000;
+            transition: transform 0.3s ease;
+        }
+
+        @media (max-width: 991px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .sidebar.show {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-left: 0 !important;
+            }
+
+            .toggle-sidebar {
+                display: block !important;
+            }
+        }
+
+        .brand-logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 2.5rem;
+            text-align: center;
+            letter-spacing: -0.5px;
+        }
+
+        .user-info {
+            padding: 1.5rem;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .nav-link {
+            color: rgba(255, 255, 255, 0.8);
+            padding: 1rem 1.25rem;
+            border-radius: 10px;
+            margin-bottom: 0.5rem;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            font-weight: 500;
+        }
+
+        .nav-link:hover {
+            background: rgba(255, 255, 255, 0.15);
+            color: white;
+            transform: translateX(5px);
+        }
+
+        .nav-link.active {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            font-weight: 600;
+        }
+
+        .main-content {
+            margin-left: var(--sidebar-width);
+            padding: 2rem;
+            transition: margin 0.3s ease;
+        }
+
+        .page-header {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: var(--card-shadow);
+        }
+
+        .collection-card {
+            background: white;
+            border-radius: 16px;
+            box-shadow: var(--card-shadow);
+            transition: all 0.3s ease;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            height: 100%;
+        }
+
+        .collection-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+
+        .btn-create {
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            border: none;
+            color: white;
+            padding: 0.8rem 2rem;
+            border-radius: 10px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .btn-create:hover {
+            background: linear-gradient(45deg, var(--primary-dark), var(--secondary-color));
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+        }
+
+        .field-badge {
+            background: rgba(124, 58, 237, 0.1);
+            color: var(--secondary-color);
+            padding: 0.4rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            margin-right: 0.5rem;
+            margin-bottom: 0.5rem;
+            display: inline-flex;
+            align-items: center;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+        .field-badge:hover {
+            background: rgba(124, 58, 237, 0.15);
+            transform: translateY(-1px);
+        }
+
+        .alert {
+            margin-bottom: 1rem;
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            padding: 1rem 1.5rem;
+        }
+
+        .modal-content {
+            border-radius: 16px;
+            border: none;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        }
+
+        .modal-header {
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            padding: 1.5rem;
+        }
+
+        .modal-body {
+            padding: 1.5rem;
+        }
+
+        .modal-footer {
+            border-top: 1px solid rgba(0, 0, 0, 0.05);
+            padding: 1.5rem;
+        }
+
+        .form-control, .form-select {
+            border-radius: 10px;
+            padding: 0.75rem 1rem;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            font-size: 0.95rem;
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            background: white;
+            border-radius: 16px;
+            box-shadow: var(--card-shadow);
+        }
+
+        .empty-state img {
+            width: 200px;
+            margin-bottom: 2rem;
+            opacity: 0.8;
+        }
+
+        .toggle-sidebar {
+            display: none;
+            position: fixed;
+            top: 1rem;
+            left: 1rem;
+            z-index: 1001;
+            background: white;
+            border: none;
+            padding: 0.5rem;
+            border-radius: 8px;
+            box-shadow: var(--card-shadow);
+            color: var(--text-primary);
+        }
+
+        .collection-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .collection-body {
+            padding: 1.5rem;
+        }
+
+        .btn-icon {
+            width: 36px;
+            height: 36px;
+            padding: 0;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            background: transparent;
+            color: var(--text-secondary);
+            transition: all 0.2s ease;
+        }
+
+        .btn-icon:hover {
+            background: rgba(0, 0, 0, 0.05);
+            color: var(--text-primary);
+        }
+
+        .dropdown-menu {
+            border: none;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            border-radius: 12px;
+            padding: 0.5rem;
+        }
+
+        .dropdown-item {
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            font-weight: 500;
+        }
+
+        .dropdown-item:hover {
+            background: var(--bg-light);
+        }
+
+        .dropdown-item.text-danger:hover {
+            background: rgba(220, 38, 38, 0.1);
+            color: var(--danger-color);
+        }
+    </style>
+</head>
+<body>
+    <button class="toggle-sidebar" onclick="toggleSidebar()">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <div class="brand-logo">FutureBase</div>
+        <div class="user-info">
+            <div class="d-flex align-items-center mb-2">
+                <i class="fas fa-user-circle fa-2x me-3"></i>
+                <div>
+                    <h6 class="mb-0 fw-bold">{{ request.user.username }}</h6>
+                    <small class="opacity-75">Project View</small>
+                </div>
+            </div>
+        </div>
+        <nav>
+            <a href="{% url 'dashboard' %}" class="nav-link">
+                <i class="fas fa-home me-3"></i> Dashboard
+            </a>
+            <a href="#" class="nav-link active">
+                <i class="fas fa-project-diagram me-3"></i> Projects
+            </a>
+            <a href="#" class="nav-link">
+                <i class="fas fa-cog me-3"></i> Settings
+            </a>
+            <a href="{% url 'logout' %}" class="nav-link">
+                <i class="fas fa-sign-out-alt me-3"></i> Logout
+            </a>
+        </nav>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        {% if messages %}
+            {% for message in messages %}
+                {% if message.tags == 'error' %}
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <i class="fas fa-exclamation-circle me-2"></i>{{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% elif message.tags == 'success' %}
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        <i class="fas fa-check-circle me-2"></i>{{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+
+        <div class="page-header">
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+                <div>
+                    <h3 class="mb-1 fw-bold">{{ project.title }}</h3>
+                    <p class="text-secondary mb-0">{{ project.description|default:"No description provided" }}</p>
+                </div>
+                <div class="d-flex gap-2">
+                    <button class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#editProjectModal">
+                        <i class="fas fa-edit me-2"></i> Edit Project
+                    </button>
+                    <button class="btn btn-create" data-bs-toggle="modal" data-bs-target="#newCollectionModal">
+                        <i class="fas fa-plus me-2"></i> Create Collection
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        {% if collections %}
+        <div class="row g-4">
+            {% for collection in collections %}
+            <div class="col-12 col-md-6 col-lg-4">
+                <div class="collection-card">
+                    <div class="collection-header">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <h5 class="mb-0 fw-semibold">{{ collection.name }}</h5>
+                            <div class="dropdown">
+                                <button class="btn-icon" type="button" data-bs-toggle="dropdown">
+                                    <i class="fas fa-ellipsis-v"></i>
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-end">
+                                    <li>
+                                        <a class="dropdown-item" href="#" onclick="editCollection({{ collection.id }}, '{{ collection.name }}')">
+                                            <i class="fas fa-edit me-2"></i>Edit
+                                        </a>
+                                    </li>
+                                    <li><a class="dropdown-item text-danger" href="#"><i class="fas fa-trash me-2"></i>Delete</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="collection-body">
+                        {% for column in collection.columns.all %}
+                        <div class="field-badge">
+                            <i class="fas fa-database me-2"></i>
+                            {{ column.name }}
+                            <small class="ms-1 opacity-75">(
+                            {% if column.field == 'T' %}
+                                Text
+                            {% elif column.field == 'U' %}
+                                URL
+                            {% elif column.field == 'N' %}
+                                Number
+                            {% elif column.field == 'D' %}
+                                Decimal
+                            {% elif column.field == 'S' %}
+                                Select
+                            {% elif column.field == 'J' %}
+                                JSON
+                            {% elif column.field == 'B' %}
+                                Boolean
+                            {% else %}
+                                {{ column.field }}
+                            {% endif %}
+                            )</small>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <img src="https://cdn-icons-png.flaticon.com/512/6598/6598519.png" alt="No collections" class="img-fluid">
+            <h4 class="fw-bold mb-3">No Collections Yet</h4>
+            <p class="text-secondary mb-4">Create your first collection to start organizing your data!</p>
+            <button class="btn btn-create" data-bs-toggle="modal" data-bs-target="#newCollectionModal">
+                <i class="fas fa-plus me-2"></i> Create Collection
+            </button>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Edit Project Modal -->
+    <div class="modal fade" id="editProjectModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title fw-semibold">Edit Project</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <form method="POST" action="{% url 'edit_project' project.id %}" class="needs-validation" novalidate>
+                    {% csrf_token %}
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="editProjectTitle" class="form-label">Project Title</label>
+                            <input type="text" class="form-control" id="editProjectTitle" name="title" required minlength="3" value="{{ project.title }}">
+                            <div class="invalid-feedback">
+                                Please enter a project title (minimum 3 characters).
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editProjectDescription" class="form-label">Description</label>
+                            <textarea class="form-control" id="editProjectDescription" name="description" rows="3">{{ project.description }}</textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-2"></i>Save Changes
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Collection Modal -->
+    <div class="modal fade" id="editCollectionModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title fw-semibold">Edit Collection</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <form id="editCollectionForm" method="POST" class="needs-validation" novalidate>
+                    {% csrf_token %}
+                    <div class="modal-body">
+                        <div class="mb-4">
+                            <label for="editCollectionName" class="form-label">Collection Name</label>
+                            <input type="text" class="form-control" id="editCollectionName" name="name" required minlength="3">
+                            <div class="invalid-feedback">
+                                Please enter a collection name (minimum 3 characters).
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label d-flex justify-content-between align-items-center">
+                                <span>Fields</span>
+                                <button type="button" class="btn btn-sm btn-outline-primary" onclick="addEditField()">
+                                    <i class="fas fa-plus me-2"></i>Add Field
+                                </button>
+                            </label>
+                            <div id="editFieldsContainer" class="mt-3">
+                                <!-- Fields will be added dynamically -->
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-2"></i>Save Changes
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- New Collection Modal -->
+    <div class="modal fade" id="newCollectionModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title fw-semibold">Create New Collection</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <form method="POST" action="{% url 'create_collection' project.id %}" class="needs-validation" novalidate>
+                    {% csrf_token %}
+                    <div class="modal-body">
+                        <div class="mb-4">
+                            <label for="collectionName" class="form-label">Collection Name</label>
+                            <input type="text" class="form-control" id="collectionName" name="name" required minlength="3">
+                            <div class="invalid-feedback">
+                                Please enter a collection name (minimum 3 characters).
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label d-flex justify-content-between align-items-center">
+                                <span>Fields</span>
+                                <button type="button" class="btn btn-sm btn-outline-primary" onclick="addField()">
+                                    <i class="fas fa-plus me-2"></i>Add Field
+                                </button>
+                            </label>
+                            <div id="fieldsContainer" class="mt-3">
+                                <div class="field-row mb-3">
+                                    <div class="input-group">
+                                        <input type="text" class="form-control" name="field_names[]" placeholder="Field Name" required>
+                                        <select class="form-select" name="field_types[]" required>
+                                            <option value="">Select field type</option>
+                                            <option value="T">Text Field</option>
+                                            <option value="U">URL Field</option>
+                                            <option value="N">Number Field</option>
+                                            <option value="D">Decimal Field</option>
+                                            <option value="S">Select Field</option>
+                                            <option value="J">JSON Field</option>
+                                            <option value="B">Boolean Field</option>
+                                        </select>
+                                        <button type="button" class="btn btn-outline-danger" onclick="removeField(this)">
+                                            <i class="fas fa-times"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-create">
+                            <i class="fas fa-plus me-2"></i>Create Collection
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Form validation
+        (function () {
+            'use strict'
+            var forms = document.querySelectorAll('.needs-validation')
+            Array.prototype.slice.call(forms).forEach(function (form) {
+                form.addEventListener('submit', function (event) {
+                    // Check if at least one field is filled out
+                    const fieldNames = form.querySelectorAll('input[name="field_names[]"]');
+                    const fieldTypes = form.querySelectorAll('select[name="field_types[]"]');
+                    let hasValidField = false;
+
+                    for (let i = 0; i < fieldNames.length; i++) {
+                        if (fieldNames[i].value && fieldTypes[i].value) {
+                            hasValidField = true;
+                            break;
+                        }
+                    }
+
+                    if (!hasValidField) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                        messages.error(request, 'At least one field with name and type is required.');
+                    }
+
+                    if (!form.checkValidity()) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                    }
+                    form.classList.add('was-validated');
+                }, false)
+            })
+        })()
+
+        // Dynamic fields
+        function addField() {
+            const template = `
+                <div class="field-row mb-3">
+                    <div class="input-group">
+                        <input type="text" class="form-control" name="field_names[]" placeholder="Field Name" required>
+                        <select class="form-select" name="field_types[]" required>
+                            <option value="">Select field type</option>
+                            <option value="T">Text Field</option>
+                            <option value="U">URL Field</option>
+                            <option value="N">Number Field</option>
+                            <option value="D">Decimal Field</option>
+                            <option value="S">Select Field</option>
+                            <option value="J">JSON Field</option>
+                            <option value="B">Boolean Field</option>
+                        </select>
+                        <button type="button" class="btn btn-outline-danger" onclick="removeField(this)">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+            `;
+            document.getElementById('fieldsContainer').insertAdjacentHTML('beforeend', template);
+        }
+
+        function removeField(button) {
+            button.closest('.field-row').remove();
+        }
+
+        function editCollection(collectionId, collectionName) {
+            fetch(`{% url 'edit_collection' project.id 0 %}`.replace('0', collectionId))
+                .then(response => response.json())
+                .then(data => {
+                    const form = document.getElementById('editCollectionForm');
+                    form.action = `{% url 'edit_collection' project.id 0 %}`.replace('0', collectionId);
+                    document.getElementById('editCollectionName').value = data.name;
+                    const container = document.getElementById('editFieldsContainer');
+                    container.innerHTML = '';
+                    data.fields.forEach(field => {
+                        addEditField(field.name, field.type);
+                    });
+                    new bootstrap.Modal(document.getElementById('editCollectionModal')).show();
+                });
+        }
+
+        function addEditField(fieldName = '', fieldType = '') {
+            const template = `
+                <div class="field-row mb-3">
+                    <div class="input-group">
+                        <input type="text" class="form-control" name="field_names[]" placeholder="Field Name" required value="${fieldName}">
+                        <select class="form-select" id="fieldType{{ forloop.counter }}" name="field_type{{ forloop.counter }}" required>
+                            <option value="">Select field type</option>
+                            <option value="T" ${fieldType === 'T' ? 'selected' : ''}>Text Field</option>
+                            <option value="U" ${fieldType === 'U' ? 'selected' : ''}>URL Field</option>
+                            <option value="N" ${fieldType === 'N' ? 'selected' : ''}>Number Field</option>
+                            <option value="D" ${fieldType === 'D' ? 'selected' : ''}>Decimal Field</option>
+                            <option value="S" ${fieldType === 'S' ? 'selected' : ''}>Select Field</option>
+                            <option value="J" ${fieldType === 'J' ? 'selected' : ''}>JSON Field</option>
+                            <option value="B" ${fieldType === 'B' ? 'selected' : ''}>Boolean Field</option>
+                        </select>
+                        <button type="button" class="btn btn-outline-danger" onclick="removeField(this)">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+            `;
+            document.getElementById('editFieldsContainer').insertAdjacentHTML('beforeend', template);
+        }
+
+        // Auto-hide alerts after 5 seconds
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(function() {
+                var alerts = document.querySelectorAll('.alert');
+                alerts.forEach(function(alert) {
+                    var bsAlert = new bootstrap.Alert(alert);
+                    bsAlert.close();
+                });
+            }, 5000);
+        });
+
+        // Reset forms when modals are closed
+        ['newCollectionModal', 'editCollectionModal'].forEach(modalId => {
+            const modal = document.getElementById(modalId);
+            if (modal) {
+                modal.addEventListener('hidden.bs.modal', function () {
+                    const form = this.querySelector('form');
+                    form.reset();
+                    form.classList.remove('was-validated');
+                    if (modalId === 'newCollectionModal') {
+                        document.getElementById('fieldsContainer').innerHTML = `
+                            <div class="field-row mb-3">
+                                <div class="input-group">
+                                    <input type="text" class="form-control" name="field_names[]" placeholder="Field Name" required>
+                                    <select class="form-select" name="field_types[]" required>
+                                        <option value="">Select field type</option>
+                                        <option value="T">Text Field</option>
+                                        <option value="U">URL Field</option>
+                                        <option value="N">Number Field</option>
+                                        <option value="D">Decimal Field</option>
+                                        <option value="S">Select Field</option>
+                                        <option value="J">JSON Field</option>
+                                        <option value="B">Boolean Field</option>
+                                    </select>
+                                    <button type="button" class="btn btn-outline-danger" onclick="removeField(this)">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        `;
+                    } else {
+                        document.getElementById('editFieldsContainer').innerHTML = '';
+                    }
+                });
+            }
+        });
+
+        // Toggle sidebar on mobile
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('show');
+        }
+    </script>
+</body>
+</html> 

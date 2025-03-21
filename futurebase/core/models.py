@@ -13,6 +13,7 @@ class Column(models.Model):
         ('D','Decimal Field'),
         ('S','Select Field'),
         ('J','JSON Field'),
+        ('B','Boolean Field'),
     )
     name = models.CharField(max_length=100)
     field = models.CharField(max_length=30,choices=DATA_TYPES)

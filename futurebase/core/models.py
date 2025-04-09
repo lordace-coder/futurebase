@@ -39,3 +39,8 @@ class Collection(models.Model):
 
     def __str__(self):
         return self.name + " Collection"
+
+    def dbName(self)->str:
+        return f"{self.name}-{self.id}"
+    
+    

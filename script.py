@@ -1,7 +1,5 @@
 import requests
-x = ['a','b','c']
 
 
-x = requests.get('https://example.com')
-
-print(x.text)
+r = requests.get("http://127.0.0.1:8000/api/collection-data/ace/lordace12/2")
+print(r.json())

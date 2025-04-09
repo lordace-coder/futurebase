@@ -350,17 +350,17 @@
 
         <div class="page-header">
             <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
-                <div>
+            <div>
                     <h3 class="mb-1 fw-bold">{{ project.title }}</h3>
                     <p class="text-secondary mb-0">{{ project.description|default:"No description provided" }}</p>
-                </div>
+            </div>
                 <div class="d-flex gap-2">
                     <button class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#editProjectModal">
                         <i class="fas fa-edit me-2"></i> Edit Project
                     </button>
-                    <button class="btn btn-create" data-bs-toggle="modal" data-bs-target="#newCollectionModal">
-                        <i class="fas fa-plus me-2"></i> Create Collection
-                    </button>
+            <button class="btn btn-create" data-bs-toggle="modal" data-bs-target="#newCollectionModal">
+                <i class="fas fa-plus me-2"></i> Create Collection
+            </button>
                 </div>
             </div>
         </div>
@@ -368,31 +368,33 @@
         {% if collections %}
         <div class="row g-4">
             {% for collection in collections %}
+            
             <div class="col-12 col-md-6 col-lg-4">
                 <div class="collection-card">
                     <div class="collection-header">
                         <div class="d-flex justify-content-between align-items-start">
                             <h5 class="mb-0 fw-semibold">{{ collection.name }}</h5>
-                            <div class="dropdown">
+                        <div class="dropdown">
                                 <button class="btn-icon" type="button" data-bs-toggle="dropdown">
-                                    <i class="fas fa-ellipsis-v"></i>
-                                </button>
+                                <i class="fas fa-ellipsis-v"></i>
+                            </button>
                                 <ul class="dropdown-menu dropdown-menu-end">
                                     <li>
                                         <a class="dropdown-item" href="#" onclick="editCollection({{ collection.id }}, '{{ collection.name }}')">
                                             <i class="fas fa-edit me-2"></i>Edit
                                         </a>
                                     </li>
-                                    <li><a class="dropdown-item text-danger" href="#"><i class="fas fa-trash me-2"></i>Delete</a></li>
-                                </ul>
+                                <li><a class="dropdown-item text-danger" href="#"><i class="fas fa-trash me-2"></i>Delete</a></li>
+                            </ul>
                             </div>
                         </div>
                     </div>
+                    <a href="{% url 'collection-detail' collection.id %}">
                     <div class="collection-body">
                         {% for column in collection.columns.all %}
                         <div class="field-badge">
                             <i class="fas fa-database me-2"></i>
-                            {{ column.name }}
+                            {{ column.name }} 
                             <small class="ms-1 opacity-75">(
                             {% if column.field == 'T' %}
                                 Text
@@ -415,8 +417,10 @@
                         </div>
                         {% endfor %}
                     </div>
+                </a>
                 </div>
             </div>
+        
             {% endfor %}
         </div>
         {% else %}
@@ -650,7 +654,7 @@
                 <div class="field-row mb-3">
                     <div class="input-group">
                         <input type="text" class="form-control" name="field_names[]" placeholder="Field Name" required value="${fieldName}">
-                        <select class="form-select" id="fieldType{{ forloop.counter }}" name="field_type{{ forloop.counter }}" required>
+                        <select class="form-select" name="field_types[]" required>
                             <option value="">Select field type</option>
                             <option value="T" ${fieldType === 'T' ? 'selected' : ''}>Text Field</option>
                             <option value="U" ${fieldType === 'U' ? 'selected' : ''}>URL Field</option>
@@ -686,35 +690,35 @@
             if (modal) {
                 modal.addEventListener('hidden.bs.modal', function () {
                     const form = this.querySelector('form');
-                    form.reset();
-                    form.classList.remove('was-validated');
+                form.reset();
+                form.classList.remove('was-validated');
                     if (modalId === 'newCollectionModal') {
-                        document.getElementById('fieldsContainer').innerHTML = `
+                document.getElementById('fieldsContainer').innerHTML = `
                             <div class="field-row mb-3">
-                                <div class="input-group">
-                                    <input type="text" class="form-control" name="field_names[]" placeholder="Field Name" required>
-                                    <select class="form-select" name="field_types[]" required>
+                        <div class="input-group">
+                            <input type="text" class="form-control" name="field_names[]" placeholder="Field Name" required>
+                            <select class="form-select" name="field_types[]" required>
                                         <option value="">Select field type</option>
-                                        <option value="T">Text Field</option>
-                                        <option value="U">URL Field</option>
-                                        <option value="N">Number Field</option>
-                                        <option value="D">Decimal Field</option>
-                                        <option value="S">Select Field</option>
-                                        <option value="J">JSON Field</option>
+                                <option value="T">Text Field</option>
+                                <option value="U">URL Field</option>
+                                <option value="N">Number Field</option>
+                                <option value="D">Decimal Field</option>
+                                <option value="S">Select Field</option>
+                                <option value="J">JSON Field</option>
                                         <option value="B">Boolean Field</option>
-                                    </select>
+                            </select>
                                     <button type="button" class="btn btn-outline-danger" onclick="removeField(this)">
-                                        <i class="fas fa-times"></i>
-                                    </button>
-                                </div>
-                            </div>
-                        `;
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
                     } else {
                         document.getElementById('editFieldsContainer').innerHTML = '';
                     }
                 });
             }
-        });
+            });
 
         // Toggle sidebar on mobile
         function toggleSidebar() {

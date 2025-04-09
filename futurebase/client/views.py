@@ -32,6 +32,7 @@ class ListCollectionsApiView(ListAPIView, Credentials):
         else:
             return Response({"error": "invalid user"}, status=400)
         return super().get(*args, **kwargs)
+    
 
 
 class ListCollectionDataApiView(APIView, Credentials):

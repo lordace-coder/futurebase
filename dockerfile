@@ -13,4 +13,4 @@ ENV PYTHONPATH=/app
 
 EXPOSE 8090
 
-CMD ["gunicorn", "-b", "0.0.0.0:8090", "futurebase.futurebase.wsgi:application"]
+CMD ["python", "futurebase/manage.py", "runserver", "0.0.0.0:8090"]

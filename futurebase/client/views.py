@@ -46,7 +46,10 @@ class ListCollectionDataApiView(APIView, Credentials):
 
         # Convert ObjectId to string for JSON serialization
         collection_data = [
-            {key: (str(value) if isinstance(value, ObjectId) else value) for key, value in doc.items()}
+            {
+                key: (str(value) if isinstance(value, ObjectId) else value)
+                for key, value in doc.items()
+            }
             for doc in collection_data
         ]
 
@@ -55,3 +58,55 @@ class ListCollectionDataApiView(APIView, Credentials):
             # "fields": fields,  # Get all columns/fields for this collection
         }
         return Response(context)
+
+
+class CollectionsActionsApiView(APIView, Credentials):
+    def post(self, request, *args, **kwargs):
+        self.validate(**kwargs)
+        collection = Collection.objects.get(
+            id=kwargs.get("id"), project__user=self.user
+        )
+        data = dict(request.data)
+        context = manager.insertData(collection.dbName(), data)
+        print(context)
+        # Convert ObjectId to string for JSON serialization
+        context["_id"] = str(context["_id"])
+
+        return Response(context)
+
+    def patch(self, request, *args, **kwargs):
+        self.validate(**kwargs)
+        collection = Collection.objects.get(
+            id=kwargs.get("id"), project__user=self.user
+        )
+        item_id = request.data.get("id")
+        data = {}
+
+        # Process form data
+        for key, value in request.POST.items():
+            if key not in ["csrfmiddlewaretoken", "_id", "id"]:
+                data[key] = value
+        context = manager.updateData(
+            collection.dbName(), filter={"_id": str(item_id)}, update={"$set": data}
+        )
+        context["_id"] = str(context["_id"])
+        return Response(context)
+
+    def delete(self, request, *args, **kwargs):
+        self.validate(**kwargs)
+        collection = Collection.objects.get(
+            id=kwargs.get("id"), project__user=self.user
+        )
+        item_id = request.data.get("id")
+        if item_id:
+            manager.deleteData(collection.dbName(), {"_id": ObjectId(str(item_id))})
+        else:
+            # the user is trying to delete wth filter
+            filter = request.data.get("filter")
+            if filter == "all":
+                filter = dict()
+            if filter == None:
+                return Response({"error": "no filter provided"}, status=400)
+            manager.deleteData(collection.dbName(), filter, many=True)
+
+        return Response()

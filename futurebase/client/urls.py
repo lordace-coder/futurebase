@@ -15,4 +15,7 @@ urlpatterns = [
         "collections/",
         views.ListCollectionsApiView.as_view(),
     ),
+    path("collection-actions/<str:email>/<str:password>/<int:id>",
+        views.CollectionsActionsApiView.as_view(),
+    ),
 ]
